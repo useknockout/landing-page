@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* brand */
+  --kno-green: #57c985;
+  --kno-green-hover: #4ab874;
+  --kno-green-press: #3da866;
+  --kno-green-soft: rgba(87, 201, 133, 0.12);
+  --kno-black: #050505;
+  --kno-white: #ffffff;
+  --kno-bg-dark: #0b0d0e;
+  --kno-text-gray: #6b7280;
+  --kno-border-gray: #e5e7eb;
+  --kno-border-strong: #d1d5db;
+  --kno-surface-gray: #f9fafb;
+  --kno-success-mint: #d1fae5;
+  --kno-success-fg: #065f46;
+  --kno-error-red: #dc2626;
+  --kno-error-bg: #fee2e2;
+  --kno-error-border: #fecaca;
+  --kno-warn-bg: #fef3c7;
+  --kno-warn-fg: #92400e;
+  --kno-warn-border: #fde68a;
+  --kno-warn-amber: #d97706;
+
+  /* dark surfaces */
+  --kno-bg-elev-dark: #14171a;
+  --kno-border-dark: #1f2326;
+  --kno-border-strong-dark: #2a2f33;
+  --kno-text-gray-dark: #9ca3af;
+
+  /* shadow */
+  --kno-shadow-floating: 0 4px 12px rgba(5, 5, 5, 0.08);
+  --kno-shadow-focus: 0 0 0 3px rgba(87, 201, 133, 0.35);
+
+  /* motion */
+  --kno-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--kno-white);
+  color: var(--kno-black);
+  font-family: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* focus ring on all focusables */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--kno-shadow-focus);
+  border-radius: 6px;
+}
+
+/* hover underline for prose links — global default; in-component links can override */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 120ms var(--kno-ease-out);
+}
+
+/* checkerboard utility for transparent-image canvases */
+.checker {
+  background-image:
+    linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+    linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, 10px 0;
+  background-color: #ffffff;
+}
+
+/* code chip used in prose */
+.code-chip {
+  font-family: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 15px;
+  color: var(--kno-black);
+}
+
+/* hide scrollbars on inline tab strips while keeping scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
