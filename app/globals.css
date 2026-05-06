@@ -58,9 +58,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sticky nav is 60-64px tall; pad anchor scrolls so headings don't hide under it. */
+/* Sticky nav is 60-64px tall; pad anchor scrolls so headings don't hide under it.
+   Belt-and-suspenders: html-level scroll-padding for browser-native scroll, plus
+   scroll-margin-top on every anchor target section in case Next.js Link triggers
+   a programmatic scroll before scroll-padding is honored. */
 html {
   scroll-padding-top: 80px;
+}
+
+section[id] {
+  scroll-margin-top: 80px;
 }
 
 /* focus ring on all focusables */
