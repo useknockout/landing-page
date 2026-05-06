@@ -189,12 +189,25 @@ export function Playground() {
     void runRequest(file);
   }
 
-  // Choose the canvas image source: uploaded preview > result blob > example mock
-  const canvasSrc = uploadedFile
-    ? URL.createObjectURL(uploadedFile)
-    : run.kind === "ok"
+  // Choose canvas source. Priority:
+  //   1. result blob (after a successful run — this is the cutout we want to brag about)
+  //   2. uploaded preview (while waiting on the run, so the user sees what they picked)
+  //   3. example baked output
+  // Memoize the upload preview URL so we don't leak object URLs every render.
+  const uploadPreviewUrl = useMemo(() => {
+    if (!uploadedFile) return null;
+    return URL.createObjectURL(uploadedFile);
+  }, [uploadedFile]);
+  useEffect(() => {
+    return () => {
+      if (uploadPreviewUrl) URL.revokeObjectURL(uploadPreviewUrl);
+    };
+  }, [uploadPreviewUrl]);
+
+  const canvasSrc =
+    run.kind === "ok"
       ? run.blobUrl
-      : example.out;
+      : uploadPreviewUrl ?? example.out;
 
   const canvasIsResult = run.kind === "ok";
 
