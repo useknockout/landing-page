@@ -97,3 +97,32 @@ a {
 /* hide scrollbars on inline tab strips while keeping scroll */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* =============================================================
+   Dark theme — applies inside [data-theme="dark"] (set by ThemeToggle).
+   Limited to dashboard surfaces; marketing pages stay light.
+   ============================================================= */
+[data-theme="dark"] {
+  color-scheme: dark;
+  background: var(--kno-bg-dark);
+  color: var(--kno-white);
+}
+
+[data-theme="dark"] .kno-surface,
+[data-theme="dark"] .bg-kno-white { background-color: var(--kno-bg-dark) !important; }
+[data-theme="dark"] .bg-kno-surface-gray { background-color: var(--kno-bg-elev-dark) !important; }
+[data-theme="dark"] .border-kno-border-gray { border-color: var(--kno-border-dark) !important; }
+[data-theme="dark"] .text-kno-black { color: var(--kno-white) !important; }
+[data-theme="dark"] .text-kno-text-gray { color: var(--kno-text-gray-dark) !important; }
+[data-theme="dark"] .checker {
+  background-image:
+    linear-gradient(45deg, var(--kno-border-dark) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--kno-border-dark) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--kno-border-dark) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--kno-border-dark) 75%);
+  background-color: var(--kno-bg-elev-dark);
+}
+[data-theme="dark"] .code-chip {
+  background: var(--kno-bg-elev-dark);
+  color: var(--kno-white);
+}
