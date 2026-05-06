@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { StatStrip } from "@/components/StatStrip";
 import { FeatureGrid } from "@/components/FeatureGrid";
 import { Endpoints } from "@/components/Endpoints";
+import { Compare } from "@/components/Compare";
 import { InstallStrip } from "@/components/InstallStrip";
 import { Pricing } from "@/components/Pricing";
 import { FAQ } from "@/components/FAQ";
@@ -17,6 +18,7 @@ export default function Home() {
         <StatStrip />
         <FeatureGrid />
         <Endpoints />
+        <Compare />
         <InstallStrip />
         <Pricing />
         <FAQ />

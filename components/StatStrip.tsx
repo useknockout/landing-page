@@ -1,8 +1,8 @@
 const STATS: { v: string; l: string }[] = [
+  { v: "20", l: "Endpoints in one API" },
   { v: "200ms", l: "Warm latency, 1024×1024" },
-  { v: "$0.005", l: "Per image (paid tier)" },
   { v: "40×", l: "Cheaper than remove.bg" },
-  { v: "MIT", l: "Code + model weights" },
+  { v: "MIT", l: "Self-hostable, your weights" },
 ];
 
 export function StatStrip() {
