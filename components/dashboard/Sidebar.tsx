@@ -82,12 +82,13 @@ export function Sidebar() {
       <div className="border-t border-kno-border-gray px-5 py-3 flex items-center justify-between">
         <StatusPill status="operational" />
         <a
-          href="https://status.useknockout.com"
+          href="https://github.com/useknockout/api/issues"
           target="_blank"
           rel="noopener noreferrer"
           className="font-mono text-[11px] text-kno-text-gray hover:text-kno-black"
+          title="status.useknockout.com is coming soon — for now report issues on GitHub"
         >
-          status →
+          report →
         </a>
       </div>
     </aside>
