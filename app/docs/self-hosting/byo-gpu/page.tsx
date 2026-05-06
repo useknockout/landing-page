@@ -190,7 +190,7 @@ export default function ByoGpuPage() {
               {[
                 ["Cost at 100k img/mo", "~$30", "~$0 (sunk GPU)"],
                 ["Cost at 10M img/mo", "~$2,500", "~$0 (sunk GPU)"],
-                ["Cold start", "~3s", "0s (always warm)"],
+                ["Cold start", "60–90s (autoscale-to-zero)", "0s (always warm)"],
                 ["Ops overhead", "Minimal", "You manage updates, security, scaling"],
                 ["Best for", "Bursty traffic", "Steady-state high volume"],
                 ["Time to first call", "~3 min", "~30 min"],

@@ -103,7 +103,7 @@ export const ENDPOINTS: EndpointSpec[] = [
     responseBody: "<binary PNG with alpha channel>",
     errors: COMMON_ERRORS,
     notes: [
-      "The model runs on a Modal L4 GPU. Cold starts add ~3 seconds.",
+      "The model runs on a Modal L4 GPU. Warm calls are ~200ms. First request after a cold container is 60–90s while weights load — Modal autoscales to zero, that's the trade-off for $0 idle cost. Pin `keep_warm=1` to eliminate cold starts.",
       "Images are processed in-memory and discarded after the response is returned.",
       "For batch workflows, fan out with Promise.all in Node or asyncio.gather in Python — or use /remove-batch.",
     ],

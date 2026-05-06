@@ -198,9 +198,11 @@ export default function ModalSelfHostingPage() {
         <p className="text-[14px] leading-[1.6] text-kno-black">
           L4 is the recommended starting point: cheapest per-image, generous Modal
           free tier, and Modal autoscales to zero when idle so you don&apos;t pay for
-          empty containers. Cold-start adds ~3 seconds — fine for most workloads,
-          tunable via <code className="code-chip">keep_warm=1</code> on the Modal function
-          decorator.
+          empty containers. Cold start is 60–90 seconds while BiRefNet, Swin2SR, and
+          GFPGAN weights load into VRAM. Production workloads should pin{" "}
+          <code className="code-chip">keep_warm=1</code> on the Modal function decorator
+          to eliminate cold starts; the warm container costs ~$0.80/hr but cuts
+          latency back to 200ms.
         </p>
       </Section>
 

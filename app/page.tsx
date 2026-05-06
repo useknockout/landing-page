@@ -8,10 +8,12 @@ import { InstallStrip } from "@/components/InstallStrip";
 import { Pricing } from "@/components/Pricing";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
+import { StructuredData } from "@/components/StructuredData";
 
 export default function Home() {
   return (
     <>
+      <StructuredData />
       <TopNav active={null} />
       <main>
         <Hero />

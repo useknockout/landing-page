@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CodeBlock } from "@/components/CodeBlock";
 import { StatusPill } from "@/components/StatusPill";
 
@@ -37,7 +37,7 @@ const ENDPOINTS: { value: Endpoint; label: string }[] = [
 ];
 
 const EXAMPLES = [
-  { src: "/assets/examples/dog-on-blue.jpg", out: "/assets/examples/hair-cutout.png", name: "dog-on-blue.jpg" },
+  { src: "/assets/examples/dog-on-blue.jpg", out: "/assets/examples/compare-example.png", name: "dog-on-blue.jpg" },
   { src: "/assets/examples/cocktail-glass.png", out: "/assets/examples/cocktail-glass.png", name: "cocktail-glass.png" },
   { src: "/assets/examples/group-on-mountains.png", out: "/assets/examples/group-on-mountains.png", name: "group-on-mountains.png" },
   { src: "/assets/examples/studio-shot-example.jpg", out: "/assets/examples/studio-shot-example.jpg", name: "studio-shot.jpg" },
@@ -89,16 +89,114 @@ open("out.${format}", "wb").write(resp.content)`;
   }
 }
 
+type RunState =
+  | { kind: "idle" }
+  | { kind: "running" }
+  | {
+      kind: "ok";
+      blobUrl: string;
+      latencyMs: number;
+      contentType: string;
+      sizeBytes: number;
+      model: string;
+    }
+  | { kind: "error"; status: number; message: string };
+
 export function Playground() {
   const [endpoint, setEndpoint] = useState<Endpoint>("/remove");
   const [format, setFormat] = useState<"png" | "webp">("png");
   const [exampleIdx, setExampleIdx] = useState(0);
   const [lang, setLang] = useState<Lang>("cURL");
+  const [run, setRun] = useState<RunState>({ kind: "idle" });
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const example = EXAMPLES[exampleIdx];
+  const filename = uploadedFile?.name ?? example.name;
   const code = useMemo(
-    () => snippet(lang, endpoint, example.name, format),
-    [lang, endpoint, example.name, format],
+    () => snippet(lang, endpoint, filename, format),
+    [lang, endpoint, filename, format],
   );
+
+  // Revoke object URLs to avoid memory leaks.
+  useEffect(() => {
+    return () => {
+      if (run.kind === "ok") URL.revokeObjectURL(run.blobUrl);
+    };
+  }, [run]);
+
+  async function loadFileFromUrl(url: string, name: string): Promise<File> {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    return new File([blob], name, { type: blob.type || "image/jpeg" });
+  }
+
+  async function runRequest(file?: File) {
+    const sourceFile =
+      file ?? uploadedFile ?? (await loadFileFromUrl(example.src, example.name));
+
+    setRun({ kind: "running" });
+    const start = performance.now();
+    try {
+      const fd = new FormData();
+      fd.append("file", sourceFile);
+      fd.append("format", format);
+
+      const resp = await fetch(
+        `/api/playground?endpoint=${encodeURIComponent(endpoint)}`,
+        { method: "POST", body: fd },
+      );
+
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        setRun({
+          kind: "error",
+          status: resp.status,
+          message: errorMessage(resp.status, body.error),
+        });
+        return;
+      }
+
+      const blob = await resp.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const headerLatency = Number.parseInt(
+        resp.headers.get("x-knockout-latency") ?? "0",
+        10,
+      );
+      const latencyMs = headerLatency > 0 ? headerLatency : Math.round(performance.now() - start);
+
+      setRun({
+        kind: "ok",
+        blobUrl,
+        latencyMs,
+        contentType: resp.headers.get("content-type") ?? `image/${format}`,
+        sizeBytes: blob.size,
+        model: resp.headers.get("x-knockout-model") ?? "BiRefNet",
+      });
+    } catch (err) {
+      setRun({
+        kind: "error",
+        status: 0,
+        message: err instanceof Error ? err.message : "Request failed",
+      });
+    }
+  }
+
+  function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadedFile(file);
+    void runRequest(file);
+  }
+
+  // Choose the canvas image source: uploaded preview > result blob > example mock
+  const canvasSrc = uploadedFile
+    ? URL.createObjectURL(uploadedFile)
+    : run.kind === "ok"
+      ? run.blobUrl
+      : example.out;
+
+  const canvasIsResult = run.kind === "ok";
 
   return (
     <div className="max-w-kno-content-wide mx-auto px-8 py-8 grid gap-6 lg:grid-cols-2">
@@ -108,6 +206,24 @@ export function Playground() {
           Pick an example or drop your own image. The exact code that produced this result updates
           live on the right.
         </p>
+        {run.kind === "error" && run.status === 503 && (
+          <div className="mt-4 px-4 py-3 rounded-kno-md border border-kno-warn-border bg-kno-warn-bg text-[13px] text-kno-warn-fg flex items-start gap-3">
+            <span className="font-mono font-semibold uppercase tracking-[0.04em]">Heads up</span>
+            <span>
+              Live API calls are warming up. The browser playground will go live the moment the
+              public-beta token is wired. Until then, the canvas shows pre-baked example outputs and
+              the code panel is fully accurate. Want a real token?{" "}
+              <a
+                href="https://github.com/useknockout/api"
+                className="underline decoration-kno-warn-amber underline-offset-4 font-medium"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Star the repo &rarr;
+              </a>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* canvas panel */}
@@ -118,18 +234,40 @@ export function Playground() {
           </span>
           <span className="font-semibold text-[14px]">{endpoint}</span>
           <span className="ml-auto">
-            <StatusPill status="operational" label="184ms" />
+            {run.kind === "running" ? (
+              <span className="font-mono text-[11px] text-kno-text-gray">running…</span>
+            ) : run.kind === "ok" ? (
+              <StatusPill status="operational" label={`${run.latencyMs}ms`} />
+            ) : (
+              <StatusPill status="operational" label="ready" />
+            )}
           </span>
         </div>
 
         <div className="aspect-square relative checker">
-          <Image
-            src={example.out}
-            alt="Cutout preview"
-            fill
-            sizes="(max-width: 1024px) 100vw, 600px"
-            className="object-contain p-[8%]"
-          />
+          {canvasSrc.startsWith("blob:") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={canvasSrc}
+              alt={canvasIsResult ? "API result" : "Source preview"}
+              className="absolute inset-0 w-full h-full object-contain p-[8%]"
+            />
+          ) : (
+            <Image
+              src={canvasSrc}
+              alt="Cutout preview"
+              fill
+              sizes="(max-width: 1024px) 100vw, 600px"
+              className="object-contain p-[8%]"
+            />
+          )}
+          {run.kind === "running" && (
+            <div className="absolute inset-0 bg-kno-white/60 flex items-center justify-center">
+              <div className="font-mono text-[12px] text-kno-black bg-kno-white border border-kno-border-gray rounded-full px-3 py-1.5 shadow-kno-sm">
+                processing…
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-4 gap-2 px-4 py-3 border-t border-kno-border-gray bg-kno-surface-gray">
@@ -137,9 +275,13 @@ export function Playground() {
             <button
               key={e.name}
               type="button"
-              onClick={() => setExampleIdx(i)}
+              onClick={() => {
+                setExampleIdx(i);
+                setUploadedFile(null);
+                setRun({ kind: "idle" });
+              }}
               className={`aspect-square bg-kno-white border rounded-kno-md overflow-hidden cursor-pointer transition-all duration-kno-fast ease-kno-out ${
-                i === exampleIdx
+                i === exampleIdx && !uploadedFile
                   ? "border-kno-green ring-2 ring-kno-green/35"
                   : "border-kno-border-gray hover:border-kno-border-strong"
               }`}
@@ -187,12 +329,22 @@ export function Playground() {
           <div className="flex gap-2.5 items-center">
             <button
               type="button"
-              className="bg-kno-green text-kno-black border-0 px-3.5 py-2.5 rounded-kno-md font-semibold text-[13px] cursor-pointer hover:bg-kno-green-hover active:bg-kno-green-press transition-colors duration-kno-fast ease-kno-out"
+              onClick={() => void runRequest()}
+              disabled={run.kind === "running"}
+              className="bg-kno-green text-kno-black border-0 px-3.5 py-2.5 rounded-kno-md font-semibold text-[13px] cursor-pointer hover:bg-kno-green-hover active:bg-kno-green-press disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-kno-fast ease-kno-out"
             >
-              Run again
+              {run.kind === "running" ? "Running…" : "Run"}
             </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic"
+              className="hidden"
+              onChange={handleUpload}
+            />
             <button
               type="button"
+              onClick={() => fileInputRef.current?.click()}
               className="bg-kno-white border border-kno-border-gray text-kno-black px-3.5 py-2.5 rounded-kno-md font-semibold text-[13px] cursor-pointer hover:bg-kno-surface-gray transition-colors duration-kno-fast ease-kno-out"
             >
               Upload your own…
@@ -201,6 +353,11 @@ export function Playground() {
               ~200ms · L4 GPU
             </span>
           </div>
+          {run.kind === "error" && run.status !== 503 && (
+            <div className="px-3 py-2 rounded-kno-md border border-[#FCA5A5] bg-kno-error-bg text-[13px] text-[#B91C1C]">
+              {run.message}
+            </div>
+          )}
         </div>
       </div>
 
@@ -237,11 +394,35 @@ export function Playground() {
         </div>
 
         <div className="px-4 py-3.5 border-t border-kno-border-gray bg-kno-surface-gray flex flex-wrap gap-2.5 items-center text-[12px] text-kno-text-gray">
-          <StatusPill status="operational" label="200 OK" />
-          <span>image/{format} · 1024×1024 · 248 KB</span>
-          <span className="ml-auto font-mono">x-knockout-model: BiRefNet</span>
+          {run.kind === "ok" ? (
+            <>
+              <StatusPill status="operational" label="200 OK" />
+              <span>
+                {run.contentType} · {(run.sizeBytes / 1024).toFixed(1)} KB
+              </span>
+              <span className="ml-auto font-mono">x-knockout-model: {run.model}</span>
+            </>
+          ) : (
+            <>
+              <StatusPill status="operational" label="ready" />
+              <span>image/{format} · waiting for run</span>
+              <span className="ml-auto font-mono">x-knockout-model: BiRefNet</span>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
+}
+
+function errorMessage(status: number, code?: string): string {
+  if (status === 503 && code === "playground_not_configured") {
+    return "Playground proxy not yet configured. Star the repo while we wire it up.";
+  }
+  if (status === 429) return "You're hitting the public-beta rate limit. Wait a minute and retry.";
+  if (status === 401) return "Public-beta token rejected. We're investigating.";
+  if (status === 413) return "Image too large. Max 10 MB and 4096×4096.";
+  if (status === 422) return "We couldn't isolate a subject in this image. Try another.";
+  if (code) return `Error: ${code}`;
+  return `Request failed (HTTP ${status}).`;
 }

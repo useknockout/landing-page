@@ -5,7 +5,7 @@ import { useState } from "react";
 const ITEMS: { q: string; a: string }[] = [
   {
     q: "How fast is it?",
-    a: "Warm latency is around 200ms for a 1024×1024 image on a Modal L4 GPU. Cold starts add ~3 seconds. Most production calls hit a warm container.",
+    a: "Warm calls are around 200ms for a 1024×1024 image on a Modal L4 GPU. The first request after a cold container is 60–90s while we load BiRefNet, Swin2SR, and GFPGAN weights — the trade-off for $0 idle cost. Production traffic stays on warm containers; pin a `keep_warm=1` worker if you want to eliminate cold starts entirely.",
   },
   {
     q: "How does the price compare?",

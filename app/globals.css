@@ -58,6 +58,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Sticky nav is 60-64px tall; pad anchor scrolls so headings don't hide under it. */
+html {
+  scroll-padding-top: 80px;
+}
+
 /* focus ring on all focusables */
 :focus-visible {
   outline: none;
