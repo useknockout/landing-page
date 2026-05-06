@@ -1,6 +1,7 @@
 import { TopNav } from "@/components/TopNav";
 import { Hero } from "@/components/Hero";
 import { StatStrip } from "@/components/StatStrip";
+import { TrustedBy } from "@/components/TrustedBy";
 import { FeatureGrid } from "@/components/FeatureGrid";
 import { Endpoints } from "@/components/Endpoints";
 import { Compare } from "@/components/Compare";
@@ -18,6 +19,7 @@ export default function Home() {
       <main>
         <Hero />
         <StatStrip />
+        <TrustedBy />
         <FeatureGrid />
         <Endpoints />
         <Compare />

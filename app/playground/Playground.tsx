@@ -201,25 +201,31 @@ export function Playground() {
   return (
     <div className="max-w-kno-content-wide mx-auto px-8 py-8 grid gap-6 lg:grid-cols-2">
       <div className="lg:col-span-2">
-        <h1 className="text-[36px] font-bold tracking-[-0.025em] m-0">Try it. No signup.</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-[36px] font-bold tracking-[-0.025em] m-0">Try it. No signup.</h1>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kno-success-mint border border-[#A7F3D0] font-mono text-[11px] text-kno-success-fg font-medium">
+            <span className="w-[6px] h-[6px] rounded-full bg-kno-green" aria-hidden />
+            Live · ~200ms warm
+          </span>
+        </div>
         <p className="text-[16px] text-kno-text-gray mt-1.5 max-w-[640px]">
-          Pick an example or drop your own image. The exact code that produced this result updates
-          live on the right.
+          Pick an example or drop your own image. Hits the real Modal API — the cutout you
+          see is the cutout your code would get. The right panel shows the exact request that
+          produced it.
         </p>
         {run.kind === "error" && run.status === 503 && (
           <div className="mt-4 px-4 py-3 rounded-kno-md border border-kno-warn-border bg-kno-warn-bg text-[13px] text-kno-warn-fg flex items-start gap-3">
             <span className="font-mono font-semibold uppercase tracking-[0.04em]">Heads up</span>
             <span>
-              Live API calls are warming up. The browser playground will go live the moment the
-              public-beta token is wired. Until then, the canvas shows pre-baked example outputs and
-              the code panel is fully accurate. Want a real token?{" "}
+              The browser playground is briefly offline while we rotate the public-beta token.
+              The code panel is still accurate — copy and run it locally with your own token.{" "}
               <a
                 href="https://github.com/useknockout/api"
                 className="underline decoration-kno-warn-amber underline-offset-4 font-medium"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Star the repo &rarr;
+                Get a token &rarr;
               </a>
             </span>
           </div>
