@@ -3,9 +3,9 @@ import Image from "next/image";
 const ITEMS = [
   {
     tag: "Hair",
-    img: "/assets/examples/hair-cutout.png",
+    img: "/assets/examples/woman-laptop-cutout.png",
     title: "Wisps without halos",
-    body: "Closed-form foreground matting cleans soft edges. No fringing, even on stark color contrasts.",
+    body: "Closed-form foreground matting cleans soft edges. No fringing, even on stark color contrasts. This was a real run on the playground — your eyes, not a marketing render.",
   },
   {
     tag: "Glass",
