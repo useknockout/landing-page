@@ -52,10 +52,12 @@ export async function createCheckoutSession(opts: {
   successUrl: string;
   cancelUrl: string;
 }): Promise<{ id: string; url: string }> {
+  // NOTE: do NOT pass `line_items[0][quantity]` here. Our prices are metered
+  // (`usage_type: metered`), so Stripe rejects an explicit quantity — the
+  // billed amount is derived from meter events at period end.
   const body: Record<string, string | number | boolean | undefined> = {
     mode: "subscription",
     "line_items[0][price]": opts.priceId,
-    "line_items[0][quantity]": 1,
     success_url: opts.successUrl,
     cancel_url: opts.cancelUrl,
     "metadata[user_id]": opts.userId,
