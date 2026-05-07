@@ -5,6 +5,63 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CodeBlock } from "@/components/CodeBlock";
 import { StatusPill } from "@/components/StatusPill";
 
+// Browser playground caps — chosen well under the server's 10MB / 4096px ceiling
+// so users never see a 413. The real API supports the full size; this is purely
+// to keep the in-browser demo snappy on big phone-camera dumps.
+const PLAYGROUND_MAX_DIM = 2048;
+const PLAYGROUND_MAX_BYTES = 8 * 1024 * 1024;
+
+async function maybeDownscale(
+  file: File,
+): Promise<{ file: File; resized: boolean; originalDims?: [number, number] }> {
+  // Fast path: small file. We still need to check dims, but skip the canvas roundtrip
+  // when we already know nothing's going to change. createImageBitmap is the cheapest decode.
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    // HEIC, corrupt, or otherwise undecodable — let the server reject it with a clear error
+    return { file, resized: false };
+  }
+
+  const { width, height } = bitmap;
+  if (
+    width <= PLAYGROUND_MAX_DIM &&
+    height <= PLAYGROUND_MAX_DIM &&
+    file.size <= PLAYGROUND_MAX_BYTES
+  ) {
+    bitmap.close?.();
+    return { file, resized: false };
+  }
+
+  const scale = Math.min(PLAYGROUND_MAX_DIM / width, PLAYGROUND_MAX_DIM / height, 1);
+  const newW = Math.round(width * scale);
+  const newH = Math.round(height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = newW;
+  canvas.height = newH;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close?.();
+    return { file, resized: false };
+  }
+  ctx.drawImage(bitmap, 0, 0, newW, newH);
+  bitmap.close?.();
+
+  const blob: Blob | null = await new Promise((resolve) =>
+    canvas.toBlob((b) => resolve(b), "image/webp", 0.92),
+  );
+  if (!blob) return { file, resized: false };
+
+  const newName = file.name.replace(/\.[^.]+$/, "") + ".webp";
+  return {
+    file: new File([blob], newName, { type: "image/webp" }),
+    resized: true,
+    originalDims: [width, height],
+  };
+}
+
 type Endpoint =
   | "/remove"
   | "/remove-url"
@@ -109,6 +166,7 @@ export function Playground() {
   const [lang, setLang] = useState<Lang>("cURL");
   const [run, setRun] = useState<RunState>({ kind: "idle" });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [resizedFrom, setResizedFrom] = useState<[number, number] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const example = EXAMPLES[exampleIdx];
@@ -132,8 +190,11 @@ export function Playground() {
   }
 
   async function runRequest(file?: File) {
-    const sourceFile =
+    const rawSource =
       file ?? uploadedFile ?? (await loadFileFromUrl(example.src, example.name));
+
+    const { file: sourceFile, resized, originalDims } = await maybeDownscale(rawSource);
+    setResizedFrom(resized && originalDims ? originalDims : null);
 
     setRun({ kind: "running" });
     const start = performance.now();
@@ -297,6 +358,7 @@ export function Playground() {
               onClick={() => {
                 setExampleIdx(i);
                 setUploadedFile(null);
+                setResizedFrom(null);
                 setRun({ kind: "idle" });
               }}
               className={`aspect-square bg-kno-white border rounded-kno-md overflow-hidden cursor-pointer transition-all duration-kno-fast ease-kno-out ${
@@ -372,6 +434,18 @@ export function Playground() {
               ~200ms · L4 GPU
             </span>
           </div>
+          {resizedFrom && (
+            <div className="px-3 py-2 rounded-kno-md border border-kno-border-gray bg-kno-surface-gray text-[12px] text-kno-text-gray flex items-start gap-2">
+              <span className="font-mono font-semibold uppercase tracking-[0.04em] text-kno-text-gray-dark">
+                Resized
+              </span>
+              <span>
+                Your {resizedFrom[0]}×{resizedFrom[1]} image was downscaled to {PLAYGROUND_MAX_DIM}px
+                for the in-browser demo. The API itself supports up to 4096×4096 — full-res works
+                from your code.
+              </span>
+            </div>
+          )}
           {run.kind === "error" && run.status !== 503 && (
             <div className="px-3 py-2 rounded-kno-md border border-[#FCA5A5] bg-kno-error-bg text-[13px] text-[#B91C1C]">
               {run.message}
