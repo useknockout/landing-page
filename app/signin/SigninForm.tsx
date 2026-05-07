@@ -1,17 +1,20 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { createClient } from "@/lib/supabase/client";
 
 export function SigninForm() {
+  const router = useRouter();
   const params = useSearchParams();
   const redirect = params.get("redirect") ?? "/dashboard";
   const errorParam = params.get("error");
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(
     errorParam === "auth_callback_failed"
       ? "Sign-in link expired or was already used. Try again."
@@ -37,10 +40,66 @@ export function SigninForm() {
     }
   }
 
-  async function handleMagicLink(e: React.FormEvent) {
+  async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setError(null);
+    setSubmitting(true);
+    try {
+      const supabase = createClient();
+      const origin = window.location.origin;
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          // Both the link and the 6-digit code are sent in the same email; this
+          // URL is the fallback if the user clicks the link instead of typing
+          // the code (e.g. on a different device).
+          emailRedirectTo: `${origin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+        },
+      });
+      if (otpError) throw otpError;
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send code");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleVerifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    const cleanCode = code.replace(/\s+/g, "");
+    if (cleanCode.length !== 6) {
+      setError("Enter the 6-digit code from your email");
+      return;
+    }
+    setError(null);
+    setVerifying(true);
+    try {
+      const supabase = createClient();
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: cleanCode,
+        type: "email",
+      });
+      if (verifyError) throw verifyError;
+      router.push(redirect);
+      router.refresh();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Could not verify code";
+      // Friendlier message for the most common error.
+      setError(
+        /token has expired|otp_expired|invalid/i.test(msg)
+          ? "That code is invalid or expired. Request a new one."
+          : msg,
+      );
+      setVerifying(false);
+    }
+  }
+
+  async function handleResend() {
+    setError(null);
+    setCode("");
     setSubmitting(true);
     try {
       const supabase = createClient();
@@ -52,9 +111,8 @@ export function SigninForm() {
         },
       });
       if (otpError) throw otpError;
-      setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign-in failed");
+      setError(err instanceof Error ? err.message : "Could not resend code");
     } finally {
       setSubmitting(false);
     }
@@ -62,24 +120,74 @@ export function SigninForm() {
 
   if (sent) {
     return (
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full bg-kno-success-mint flex items-center justify-center mx-auto mb-4">
-          <span className="text-kno-success-fg text-xl">✓</span>
+      <div className="flex flex-col gap-5">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-kno-success-mint flex items-center justify-center mx-auto mb-4">
+            <span className="text-kno-success-fg text-xl">✓</span>
+          </div>
+          <h2 className="font-semibold text-[18px] mb-2">Check your email</h2>
+          <p className="text-[14px] text-kno-text-gray">
+            We sent a 6-digit code to <strong>{email}</strong>.
+          </p>
         </div>
-        <h2 className="font-semibold text-[18px] mb-2">Check your email</h2>
-        <p className="text-[14px] text-kno-text-gray">
-          We sent a magic sign-in link to <strong>{email}</strong>. Click it to continue.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setSent(false);
-            setEmail("");
-          }}
-          className="mt-6 text-[13px] text-kno-text-gray hover:text-kno-black underline decoration-kno-border-strong underline-offset-4"
-        >
-          Use a different email
-        </button>
+
+        <form onSubmit={handleVerifyCode} className="flex flex-col gap-3">
+          <label className="text-[12px] text-kno-text-gray font-medium" htmlFor="code">
+            Sign-in code
+          </label>
+          <input
+            id="code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9]*"
+            maxLength={6}
+            required
+            autoFocus
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
+            placeholder="123456"
+            className="font-mono text-center text-[20px] tracking-[0.4em] px-3 py-3 rounded-kno-md border border-kno-border-gray bg-kno-white outline-none focus:border-kno-green focus:shadow-kno-focus"
+          />
+          <Button
+            variant="primary"
+            size="lg"
+            type="submit"
+            className="w-full"
+            disabled={verifying || code.length !== 6}
+          >
+            {verifying ? "Verifying…" : "Verify and continue"}
+          </Button>
+        </form>
+
+        {error && (
+          <div className="px-3 py-2 rounded-kno-md border border-[#FCA5A5] bg-kno-error-bg text-[13px] text-[#B91C1C]">
+            {error}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between text-[12px] text-kno-text-gray">
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={submitting}
+            className="hover:text-kno-black underline decoration-kno-border-strong underline-offset-4 disabled:opacity-50"
+          >
+            {submitting ? "Resending…" : "Resend code"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSent(false);
+              setEmail("");
+              setCode("");
+              setError(null);
+            }}
+            className="hover:text-kno-black underline decoration-kno-border-strong underline-offset-4"
+          >
+            Use a different email
+          </button>
+        </div>
       </div>
     );
   }
@@ -105,7 +213,7 @@ export function SigninForm() {
         <div className="flex-1 h-px bg-kno-border-gray" />
       </div>
 
-      <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
+      <form onSubmit={handleSendCode} className="flex flex-col gap-3">
         <label className="text-[12px] text-kno-text-gray font-medium" htmlFor="email">
           Email
         </label>
@@ -126,7 +234,7 @@ export function SigninForm() {
           className="w-full"
           disabled={submitting || !email}
         >
-          {submitting ? "Sending…" : "Email me a sign-in link"}
+          {submitting ? "Sending…" : "Email me a sign-in code"}
         </Button>
       </form>
 
