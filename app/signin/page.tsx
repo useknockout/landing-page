@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { TopNav } from "@/components/TopNav";
 import { Footer } from "@/components/Footer";
+import { createClient } from "@/lib/supabase/server";
 import { SigninForm } from "./SigninForm";
 
 export const metadata: Metadata = {
@@ -10,7 +12,27 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function SigninPage() {
+// Force dynamic rendering so the auth check runs per-request.
+export const dynamic = "force-dynamic";
+
+type SigninPageProps = {
+  searchParams?: { redirect?: string; error?: string };
+};
+
+export default async function SigninPage({ searchParams }: SigninPageProps) {
+  // If the user is already signed in, skip the form and bounce to the
+  // intended destination. Without this, clicking "Get token" on /pricing
+  // (which routes through /signin?redirect=…) creates a confusing loop where
+  // signed-in users see the sign-in form a second time.
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  if (data.user) {
+    const redirectTo = searchParams?.redirect ?? "/dashboard";
+    // Only allow internal redirects to avoid open-redirect attacks.
+    const safeTarget = redirectTo.startsWith("/") ? redirectTo : "/dashboard";
+    redirect(safeTarget);
+  }
+
   return (
     <>
       <TopNav active={null} />

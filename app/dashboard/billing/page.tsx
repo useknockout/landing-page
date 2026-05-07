@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/Button";
+import { UpgradeButton } from "@/components/dashboard/UpgradeButton";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Billing" };
@@ -107,11 +108,7 @@ export default async function BillingPage() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          {tier === "free" && (
-            <Button href="/pricing" variant="primary">
-              Upgrade to Pay-as-you-go →
-            </Button>
-          )}
+          {tier === "free" && <UpgradeButton tier="payg" />}
           {profile?.stripe_customer_id ? (
             <Button
               href="/api/stripe/portal"
