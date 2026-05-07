@@ -42,13 +42,34 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event.type) {
-      case "checkout.session.completed":
+      case "checkout.session.completed": {
+        // The Checkout Session object has no `items.data` — that's only on
+        // subscription objects. Here we just persist the customer_id ↔ user_id
+        // mapping. The follow-up `customer.subscription.created` event carries
+        // the price info and is where we set tier.
+        const obj = event.data.object as {
+          customer?: string;
+          metadata?: { user_id?: string };
+        };
+        const userId = obj.metadata?.user_id;
+        const customerId = typeof obj.customer === "string" ? obj.customer : null;
+        if (userId && customerId) {
+          await supabase
+            .from("users")
+            .update({
+              stripe_customer_id: customerId,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", userId);
+        }
+        break;
+      }
       case "customer.subscription.created":
       case "customer.subscription.updated": {
         const obj = event.data.object as {
           customer?: string;
           metadata?: { user_id?: string };
-          subscription?: string;
+          status?: string;
           items?: { data: { price: { id: string } }[] };
         };
         const userId = obj.metadata?.user_id;
@@ -58,6 +79,14 @@ export async function POST(request: NextRequest) {
         let tier: "free" | "payg" | "volume" | "enterprise" = "free";
         if (priceId === process.env.STRIPE_PRICE_PAYG) tier = "payg";
         else if (priceId === process.env.STRIPE_PRICE_VOLUME) tier = "volume";
+        // If the subscription is no longer active, drop back to free.
+        if (
+          obj.status === "canceled" ||
+          obj.status === "incomplete_expired" ||
+          obj.status === "unpaid"
+        ) {
+          tier = "free";
+        }
 
         if (userId) {
           await supabase
