@@ -72,17 +72,15 @@ export function TopNav({ active = null, badge, variant = "light" }: Props) {
       </div>
 
       <div className="ml-auto flex items-center gap-4">
-        <a
-          href="https://github.com/useknockout/api"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/signin"
           className={`hidden sm:inline text-[13px] font-medium ${
             dark ? "text-kno-white" : "text-kno-black"
           }`}
         >
           Sign in
-        </a>
-        <Button href="https://github.com/useknockout/api" variant="primary" size="sm">
+        </Link>
+        <Button href="/signin?redirect=/dashboard/keys" variant="primary" size="sm">
           Get token →
         </Button>
       </div>
