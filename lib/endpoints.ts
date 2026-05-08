@@ -568,7 +568,7 @@ x-knockout-preview: 1`,
       { status: "429", code: "rate_limit_exceeded", desc: "Slow down. Retry-After header tells you when." },
     ],
     notes: [
-      "Free tier: previews don't count toward your 50/mo quota.",
+      "Free tier: previews don't count toward your 20/mo quota.",
       "Paid tier: previews are billed at $0.0005/image (10× cheaper than full /remove).",
       "Always use /preview for hover/thumbnail UX. Reserve /remove for the final export.",
     ],

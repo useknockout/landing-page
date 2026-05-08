@@ -10,7 +10,7 @@ const TIER_DETAILS = {
   free: {
     name: "Free",
     price: "$0",
-    description: "50 images per month. Free during beta.",
+    description: "20 images per month. Free during beta.",
   },
   payg: {
     name: "Pay-as-you-go",
@@ -159,7 +159,7 @@ export default async function BillingPage() {
               className="font-bold"
               style={{ fontSize: 24, letterSpacing: "-0.015em" }}
             >
-              {tier === "free" ? `${calls}/50` : "unlimited"}
+              {tier === "free" ? `${calls}/20` : "unlimited"}
             </div>
           </div>
         </div>

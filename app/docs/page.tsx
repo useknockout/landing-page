@@ -104,7 +104,7 @@ export default function DocsHome() {
 
       <Section id="rate-limits" title="4. Rate limits">
         <p className="text-[14px] leading-[1.6] text-kno-black">
-          Free tier: 60 req/min, 50 images/month. Paid tier: 600 req/min, no monthly cap. The
+          Free tier: 60 req/min, 20 images/month. Paid tier: 600 req/min, no monthly cap. The
           response always includes <code className="code-chip">x-ratelimit-limit</code> and{" "}
           <code className="code-chip">x-ratelimit-remaining</code>.
         </p>

@@ -15,9 +15,9 @@ const TIERS: Tier[] = [
   {
     name: "Free",
     price: "$0",
-    per: "50 images / month",
+    per: "20 images / month",
     best: "Eval, side projects, OSS",
-    features: ["50 images / month", "No card required", "Public beta token", "Community support"],
+    features: ["20 images / month", "No card required", "Public beta token", "Community support"],
     cta: "Start free",
     ctaHref: "https://github.com/useknockout/api",
   },

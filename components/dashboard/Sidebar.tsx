@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { StatusPill } from "@/components/StatusPill";
+
 
 type Item = { label: string; href: string; mono?: boolean };
 type Group = { heading?: string; items: Item[] };
@@ -79,16 +79,14 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-kno-border-gray px-5 py-3 flex items-center justify-between">
-        <StatusPill status="operational" />
+      <div className="border-t border-kno-border-gray px-5 py-3">
         <a
           href="https://github.com/useknockout/api/issues"
           target="_blank"
           rel="noopener noreferrer"
           className="font-mono text-[11px] text-kno-text-gray hover:text-kno-black"
-          title="status.useknockout.com is coming soon — for now report issues on GitHub"
         >
-          report →
+          Report an issue →
         </a>
       </div>
     </aside>

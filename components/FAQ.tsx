@@ -9,7 +9,7 @@ const ITEMS: { q: string; a: string }[] = [
   },
   {
     q: "How does the price compare?",
-    a: "$0.005 per image on the paid tier — about 40× cheaper than remove.bg's $0.20 PAYG rate. The free tier covers 50 images per month with no card required.",
+    a: "$0.005 per image on the paid tier — about 40× cheaper than remove.bg's $0.20 PAYG rate. The free tier covers 20 images per month with no card required.",
   },
   {
     q: "Is the model open source?",

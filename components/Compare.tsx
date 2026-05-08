@@ -10,7 +10,7 @@ const VENDORS = ["useknockout", "remove.bg", "Photoroom", "Slazzer", "ClipDrop"]
 
 const ROWS: Row[] = [
   { label: "Per-image cost (PAYG)", values: ["$0.005", "$0.20", "$0.10", "$0.10", "$0.05"] },
-  { label: "Free tier / month", values: ["50 / mo", "1 / mo", "0", "20 / mo", "100 / mo"] },
+  { label: "Free tier / month", values: ["20 / mo", "1 / mo", "0", "20 / mo", "100 / mo"] },
   { label: "Background removal", values: [true, true, true, true, true] },
   { label: "Super-resolution", values: [true, false, false, true, true] },
   { label: "Face restore", values: [true, false, true, false, true] },

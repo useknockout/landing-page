@@ -18,7 +18,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: "How does the price compare?",
-    a: "$0.005 per image on the paid tier — about 40x cheaper than remove.bg's $0.20 PAYG rate. The free tier covers 50 images per month with no card required.",
+    a: "$0.005 per image on the paid tier — about 40x cheaper than remove.bg's $0.20 PAYG rate. The free tier covers 20 images per month with no card required.",
   },
   {
     q: "Is the model open source?",
@@ -51,7 +51,7 @@ const product = {
   "@type": "Product",
   name: "useknockout",
   description:
-    "Open-source image API for developers. Background removal, super-resolution, face restore, sticker outlines, studio composites, batch processing, and 14 more endpoints. ~200ms per call. MIT licensed, self-hostable, 40x cheaper than remove.bg.",
+    "Open-source image API for developers. Background removal, super-resolution, face restore, sticker outlines, studio composites, batch processing, and 20+ more endpoints. ~200ms per call. MIT licensed, self-hostable, 40x cheaper than remove.bg.",
   brand: { "@type": "Brand", name: "useknockout" },
   url: SITE_URL,
   image: `${SITE_URL}/og-card.png`,

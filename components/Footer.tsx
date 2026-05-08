@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { StatusPill } from "./StatusPill";
 
 const COLS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -26,8 +25,10 @@ const COLS: { heading: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "GitHub", href: "https://github.com/useknockout/api" },
       { label: "X / Twitter", href: "https://x.com/useknockout" },
-      { label: "Status", href: "https://status.useknockout.com" },
+      { label: "Report issue", href: "https://github.com/useknockout/api/issues" },
       { label: "Contact", href: "mailto:hi@useknockout.com" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];
@@ -47,8 +48,15 @@ export function Footer() {
           <p className="font-mono text-[12px] text-kno-text-gray mt-2">
             MIT licensed · BiRefNet on Modal GPUs
           </p>
-          <div className="mt-4">
-            <StatusPill status="operational" />
+          <div className="mt-4 font-mono text-[11px] text-kno-text-gray">
+            <a
+              href="https://github.com/useknockout/api/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-kno-white transition-colors duration-kno-fast ease-kno-out"
+            >
+              Report an issue on GitHub →
+            </a>
           </div>
         </div>
 

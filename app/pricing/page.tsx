@@ -25,9 +25,9 @@ const TIERS: Tier[] = [
   {
     name: "Free",
     price: "$0",
-    per: "50 images / month",
+    per: "20 images / month",
     bullets: [
-      "50 images per month",
+      "20 images per month",
       "No card required",
       "All 20 endpoints",
       "Public beta token",
