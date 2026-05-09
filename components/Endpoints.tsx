@@ -40,6 +40,7 @@ const GROUPS: Group[] = [
     eps: [
       { v: "POST", p: "/upscale", d: "Swin2SR default · Real-ESRGAN via model param" },
       { v: "POST", p: "/face-restore", d: "GFPGAN face restoration · optional bg upscale" },
+      { v: "POST", p: "/colorize", d: "DDColor B&W photo colorization · ~500ms warm" },
     ],
   },
   {

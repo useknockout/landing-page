@@ -545,6 +545,55 @@ x-knockout-model: GFPGAN-1.4`,
     ],
     curl: curlFor("/face-restore"),
     prev: { slug: "upscale", label: "POST /upscale" },
+    next: { slug: "colorize", label: "POST /colorize" },
+  },
+  {
+    slug: "colorize",
+    verb: "POST",
+    path: "/colorize",
+    group: "Enhancement",
+    title: "Colorize B&W photos",
+    lede:
+      "DDColor colorization. Adds plausible color to black-and-white or grayscale photos. ConvNeXt-Large backbone predicting ab channels in LAB color space — single feed-forward inference, no diffusion sampling. Color inputs are accepted too (treated as grayscale internally).",
+    params: [
+      {
+        field: "file",
+        type: "file",
+        desc: "Source image (B&W, grayscale, or color). JPEG, PNG, WebP. Up to 25 MB.",
+        required: true,
+      },
+      {
+        field: "format",
+        type: "string",
+        def: "png",
+        desc: "Output format — png, webp, or jpg.",
+      },
+    ],
+    responseHeaders: `HTTP/1.1 200 OK
+content-type: image/png
+x-knockout-latency: 502
+x-knockout-model: DDColor`,
+    responseBody: "<binary colorized image, same dimensions as input>",
+    errors: [
+      { status: "400", code: "invalid_image", desc: "Invalid image, unsupported format, or decode failure." },
+      { status: "401", code: "unauthorized", desc: "Missing or invalid token." },
+      { status: "403", code: "forbidden", desc: "Invalid bearer token." },
+      { status: "413", code: "payload_too_large", desc: "Image exceeds 25 MB." },
+      { status: "429", code: "rate_limit_exceeded", desc: "Slow down. Retry-After header tells you when." },
+      { status: "500", code: "colorize_failed", desc: "colorize failed or produced no output." },
+    ],
+    notes: [
+      "Apache-2.0 licensed model (DDColor with ConvNeXt-Large backbone).",
+      "~500ms warm on an L4 GPU, ~25s cold start (weights ~870 MB, pre-baked into the image).",
+      "Use cases: family archives, historical photos, B&W scans, vintage stock imagery.",
+      "Color inputs are accepted — the image is converted to grayscale internally before colorization.",
+    ],
+    curl: `curl -X POST "https://useknockout--api.modal.run/colorize" \\
+  -H "Authorization: Bearer $TOKEN" \\
+  -F "file=@old-photo.jpg" \\
+  -F "format=png" \\
+  -o colorized.png`,
+    prev: { slug: "face-restore", label: "POST /face-restore" },
     next: { slug: "preview", label: "POST /preview" },
   },
 
@@ -573,7 +622,7 @@ x-knockout-preview: 1`,
       "Always use /preview for hover/thumbnail UX. Reserve /remove for the final export.",
     ],
     curl: curlFor("/preview"),
-    prev: { slug: "face-restore", label: "POST /face-restore" },
+    prev: { slug: "colorize", label: "POST /colorize" },
     next: { slug: "estimate", label: "POST /estimate" },
   },
   {
@@ -691,7 +740,7 @@ content-type: application/json`,
     "/remove-batch", "/remove-batch-url",
     "/mask", "/sticker", "/outline", "/smart-crop",
     "/shadow", "/studio-shot", "/headshot", "/compare",
-    "/upscale", "/face-restore",
+    "/upscale", "/face-restore", "/colorize",
     "/preview", "/estimate", "/health", "/stats"
   ]
 }`,

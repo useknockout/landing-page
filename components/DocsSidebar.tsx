@@ -54,6 +54,7 @@ const GROUPS: Group[] = [
     items: [
       { label: "POST /upscale", href: "/docs/endpoints/upscale" },
       { label: "POST /face-restore", href: "/docs/endpoints/face-restore" },
+      { label: "POST /colorize", href: "/docs/endpoints/colorize" },
     ],
   },
   {

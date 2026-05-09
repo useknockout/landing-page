@@ -93,7 +93,7 @@ export function Footer() {
       <div className="max-w-kno-content mx-auto mt-12 pt-5 border-t border-kno-border-dark flex flex-col md:flex-row justify-between gap-2">
         <span className="font-mono text-[12px] text-kno-text-gray">© 2026 useknockout</span>
         <span className="font-mono text-[12px] text-kno-text-gray">
-          Built in a few hours because someone said it couldn&apos;t be done.
+          One API call. No background.
         </span>
       </div>
     </footer>
