@@ -75,6 +75,8 @@ type Endpoint =
   | "/headshot"
   | "/upscale"
   | "/face-restore"
+  | "/colorize"
+  | "/silhouette"
   | "/preview";
 
 const ENDPOINTS: { value: Endpoint; label: string }[] = [
@@ -90,6 +92,8 @@ const ENDPOINTS: { value: Endpoint; label: string }[] = [
   { value: "/headshot", label: "POST /headshot — portrait cleanup" },
   { value: "/upscale", label: "POST /upscale — Swin2SR / Real-ESRGAN" },
   { value: "/face-restore", label: "POST /face-restore — GFPGAN" },
+  { value: "/colorize", label: "POST /colorize — DDColor B&W colorization" },
+  { value: "/silhouette", label: "POST /silhouette — two-tone portrait" },
   { value: "/preview", label: "POST /preview — low-res quick preview" },
 ];
 
