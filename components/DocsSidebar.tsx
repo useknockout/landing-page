@@ -38,6 +38,7 @@ const GROUPS: Group[] = [
       { label: "POST /sticker", href: "/docs/endpoints/sticker" },
       { label: "POST /outline", href: "/docs/endpoints/outline" },
       { label: "POST /smart-crop", href: "/docs/endpoints/smart-crop" },
+      { label: "POST /silhouette", href: "/docs/endpoints/silhouette" },
     ],
   },
   {

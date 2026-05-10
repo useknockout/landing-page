@@ -51,7 +51,7 @@ const product = {
   "@type": "Product",
   name: "useknockout",
   description:
-    "Open-source image API for developers. Background removal, super-resolution, face restore, sticker outlines, studio composites, batch processing, and 20+ more endpoints. ~200ms per call. MIT licensed, self-hostable, 40x cheaper than remove.bg.",
+    "Open-source image API for developers. Background removal, super-resolution, face restore, sticker outlines, studio composites, batch processing, and 22+ endpoints. ~200ms per call. MIT licensed, self-hostable, 40x cheaper than remove.bg.",
   brand: { "@type": "Brand", name: "useknockout" },
   url: SITE_URL,
   image: `${SITE_URL}/og-card.png`,

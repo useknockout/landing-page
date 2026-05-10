@@ -18,6 +18,7 @@ const ROWS: Row[] = [
   { label: "Studio composite", values: [true, false, true, false, true] },
   { label: "Drop shadow", values: [true, false, true, false, true] },
   { label: "Smart crop", values: [true, false, true, false, false] },
+  { label: "Silhouette portrait", values: [true, false, false, false, false] },
   { label: "Batch endpoint", values: [true, true, true, true, false] },
   { label: "Node SDK", values: [true, true, false, false, false] },
   { label: "React SDK", values: [true, false, false, false, false] },

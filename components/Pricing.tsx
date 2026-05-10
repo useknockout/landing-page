@@ -26,7 +26,7 @@ const TIERS: Tier[] = [
     price: "$0.005",
     per: "per image",
     best: "Side projects, early startups",
-    features: ["Per-image billing", "Credits never expire", "All 20 endpoints", "Email support"],
+    features: ["Per-image billing", "Credits never expire", "All 22 endpoints", "Email support"],
     cta: "Get token →",
     ctaHref: "https://github.com/useknockout/api",
     primary: true,

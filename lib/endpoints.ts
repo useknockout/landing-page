@@ -380,6 +380,62 @@ x-knockout-latency: 178`,
     ],
     curl: curlFor("/smart-crop", `-F "aspect=1:1" -F "padding=16"`),
     prev: { slug: "outline", label: "POST /outline" },
+    next: { slug: "silhouette", label: "POST /silhouette" },
+  },
+  {
+    slug: "silhouette",
+    verb: "POST",
+    path: "/silhouette",
+    group: "Cutout",
+    title: "Two-tone silhouette portrait",
+    lede:
+      "Subject filled with one solid color, background filled with another. Apple Music / Spotify avatar aesthetic. Reuses BiRefNet's mask path — no extra model load.",
+    params: [
+      COMMON_FILE_PARAM,
+      {
+        field: "subject_color",
+        type: "string",
+        def: "#7C3AED",
+        desc: "Hex color for the subject fill. Default is purple.",
+      },
+      {
+        field: "bg_color",
+        type: "string",
+        def: "#FFFFFF",
+        desc: "Hex color for the background fill. Default is white.",
+      },
+      {
+        field: "format",
+        type: "string",
+        def: "png",
+        desc: "Output format — png, webp, or jpg.",
+      },
+    ],
+    responseHeaders: `HTTP/1.1 200 OK
+content-type: image/png
+x-knockout-latency: 210
+x-knockout-model: BiRefNet`,
+    responseBody: "<binary silhouette image, same dimensions as input>",
+    errors: [
+      { status: "400", code: "invalid_image", desc: "Invalid image, unsupported format, or decode failure." },
+      { status: "401", code: "unauthorized", desc: "Missing or invalid token." },
+      { status: "403", code: "forbidden", desc: "Invalid bearer token." },
+      { status: "413", code: "payload_too_large", desc: "Image exceeds 10 MB or 4096×4096." },
+      { status: "429", code: "rate_limit_exceeded", desc: "Slow down. Retry-After header tells you when." },
+      { status: "500", code: "silhouette_failed", desc: "Silhouette generation failed or produced no output." },
+    ],
+    notes: [
+      "Reuses BiRefNet's mask path — same warm latency as /mask (~150–300ms).",
+      "Use cases: stylized profile pictures, podcast cover art, anonymized portraits, branding placeholders, social media avatar generators.",
+      "Color inputs are valid hex strings — 3-digit (#FFF) or 6-digit (#FFFFFF) with or without the # prefix.",
+    ],
+    curl: `curl -X POST "https://useknockout--api.modal.run/silhouette" \\
+  -H "Authorization: Bearer $TOKEN" \\
+  -F "file=@portrait.jpg" \\
+  -F "subject_color=#1E2960" \\
+  -F "bg_color=#F0857C" \\
+  -o silhouette.png`,
+    prev: { slug: "smart-crop", label: "POST /smart-crop" },
     next: { slug: "shadow", label: "POST /shadow" },
   },
 
@@ -404,7 +460,7 @@ x-knockout-latency: 178`,
     responseBody: "<binary PNG, subject + drop shadow + transparent canvas>",
     errors: COMMON_ERRORS,
     curl: curlFor("/shadow", `-F "blur=24" -F "opacity=0.35"`),
-    prev: { slug: "smart-crop", label: "POST /smart-crop" },
+    prev: { slug: "silhouette", label: "POST /silhouette" },
     next: { slug: "studio-shot", label: "POST /studio-shot" },
   },
   {
@@ -738,7 +794,7 @@ content-type: application/json`,
   "endpoints": [
     "/remove", "/remove-url", "/replace-bg",
     "/remove-batch", "/remove-batch-url",
-    "/mask", "/sticker", "/outline", "/smart-crop",
+    "/mask", "/sticker", "/outline", "/smart-crop", "/silhouette",
     "/shadow", "/studio-shot", "/headshot", "/compare",
     "/upscale", "/face-restore", "/colorize",
     "/preview", "/estimate", "/health", "/stats"
