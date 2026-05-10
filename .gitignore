@@ -24,3 +24,7 @@ dist/
 next-env.d.ts.bak
 
 .vercel
+
+# agent coordination (internal, not product)
+AGENT_COMMS.md
+AGENT_HANDOFF.md
