@@ -436,6 +436,70 @@ x-knockout-model: BiRefNet`,
   -F "bg_color=#F0857C" \\
   -o silhouette.png`,
     prev: { slug: "smart-crop", label: "POST /smart-crop" },
+    next: { slug: "inpaint", label: "POST /inpaint" },
+  },
+  {
+    slug: "inpaint",
+    verb: "POST",
+    path: "/inpaint",
+    group: "Cutout",
+    title: "Inpaint / erase region",
+    lede:
+      "LaMa-based image inpainting. Erase any region — a person, a logo, a power line — and have the model fill the hole with plausible background. Three input modes: send just the photo to auto-erase the subject, send a mask PNG, or send a bounding box.",
+    params: [
+      COMMON_FILE_PARAM,
+      {
+        field: "mask",
+        type: "file",
+        desc: "Optional mask PNG/JPEG — white pixels = inpaint, black = keep. If omitted and no bbox, BiRefNet auto-detects the subject and inverts the mask.",
+      },
+      {
+        field: "x,y,w,h",
+        type: "int",
+        desc: "Optional bounding box in image pixels. Synthesized into a mask internally. Ignored if mask is provided.",
+      },
+      {
+        field: "dilation",
+        type: "int 0-32",
+        def: "8",
+        desc: "Expand the mask by N pixels before inpainting. Helps blend edges.",
+      },
+      {
+        field: "format",
+        type: "string",
+        def: "png",
+        desc: "Output format — png, webp, or jpg.",
+      },
+    ],
+    responseHeaders: `HTTP/1.1 200 OK
+content-type: image/png
+x-knockout-latency: 380
+x-knockout-model: big-lama
+x-knockout-mode: auto-subject`,
+    responseBody: "<binary inpainted image, same dimensions as input>",
+    errors: [
+      { status: "400", code: "empty_mask", desc: "Mask has no pixels to inpaint." },
+      { status: "400", code: "invalid_bbox", desc: "bbox extends outside the image." },
+      { status: "400", code: "invalid_dilation", desc: "dilation must be 0..32." },
+      { status: "401", code: "unauthorized", desc: "Missing or invalid token." },
+      { status: "413", code: "payload_too_large", desc: "Image exceeds 10 MB or 4096×4096." },
+      { status: "422", code: "no_subject_detected", desc: "No subject detected. Send mask or bbox instead." },
+      { status: "429", code: "rate_limit_exceeded", desc: "Slow down. Retry-After header tells you when." },
+      { status: "500", code: "inpaint_failed", desc: "Inpaint failed or produced no output." },
+    ],
+    notes: [
+      "Mode precedence when multiple fields present: mask > bbox > auto-subject.",
+      "Auto-subject mode uses BiRefNet to detect the foreground, then inverts the mask so the background is filled. Great for removing people from backgrounds.",
+      "LaMa (Large Mask Inpainting) — Apache-2.0 licensed. Deterministic, no prompts, no diffusion sampling.",
+      "Runs at 1024px internally, then composites back to original resolution — unmasked pixels are byte-identical to input.",
+      "Chain with /upscale if you need sharper fills on very large images.",
+    ],
+    curl: `curl -X POST "https://useknockout--api.modal.run/inpaint" \\
+  -H "Authorization: Bearer $TOKEN" \\
+  -F "file=@photo.jpg" \\
+  -F "dilation=8" \\
+  -o inpainted.png`,
+    prev: { slug: "silhouette", label: "POST /silhouette" },
     next: { slug: "shadow", label: "POST /shadow" },
   },
 
@@ -460,7 +524,7 @@ x-knockout-model: BiRefNet`,
     responseBody: "<binary PNG, subject + drop shadow + transparent canvas>",
     errors: COMMON_ERRORS,
     curl: curlFor("/shadow", `-F "blur=24" -F "opacity=0.35"`),
-    prev: { slug: "silhouette", label: "POST /silhouette" },
+    prev: { slug: "inpaint", label: "POST /inpaint" },
     next: { slug: "studio-shot", label: "POST /studio-shot" },
   },
   {
@@ -794,7 +858,7 @@ content-type: application/json`,
   "endpoints": [
     "/remove", "/remove-url", "/replace-bg",
     "/remove-batch", "/remove-batch-url",
-    "/mask", "/sticker", "/outline", "/smart-crop", "/silhouette",
+    "/mask", "/sticker", "/outline", "/smart-crop", "/silhouette", "/inpaint",
     "/shadow", "/studio-shot", "/headshot", "/compare",
     "/upscale", "/face-restore", "/colorize",
     "/preview", "/estimate", "/health", "/stats"

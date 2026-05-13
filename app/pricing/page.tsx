@@ -8,7 +8,7 @@ import { FAQ } from "@/components/FAQ";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "$0.005 per image. Volume discounts at 100k. Free during beta. Per-image billing, credits never expire, all 22 endpoints.",
+    "$0.005 per image. Volume discounts at 100k. Free during beta. Per-image billing, credits never expire, all 23 endpoints.",
 };
 
 type Tier = {
@@ -94,7 +94,7 @@ function Hero() {
       </h1>
       <p className="text-[18px] text-kno-text-gray mt-4 max-w-[640px] mx-auto">
         $0.005 per image. Volume discounts at 100k. Free during beta. Per-image billing,
-        credits never expire, all 22 endpoints.
+        credits never expire, all 23 endpoints.
       </p>
     </section>
   );

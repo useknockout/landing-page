@@ -77,6 +77,7 @@ type Endpoint =
   | "/face-restore"
   | "/colorize"
   | "/silhouette"
+  | "/inpaint"
   | "/preview";
 
 const ENDPOINTS: { value: Endpoint; label: string }[] = [
@@ -94,6 +95,7 @@ const ENDPOINTS: { value: Endpoint; label: string }[] = [
   { value: "/face-restore", label: "POST /face-restore — GFPGAN" },
   { value: "/colorize", label: "POST /colorize — DDColor B&W colorization" },
   { value: "/silhouette", label: "POST /silhouette — two-tone portrait" },
+  { value: "/inpaint", label: "POST /inpaint — LaMa erase & fill" },
   { value: "/preview", label: "POST /preview — low-res quick preview" },
 ];
 

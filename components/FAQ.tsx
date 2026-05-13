@@ -5,7 +5,7 @@ import { useState } from "react";
 const ITEMS: { q: string; a: string }[] = [
   {
     q: "How fast is it?",
-    a: "Warm calls are around 200ms for a 1024×1024 image on a Modal L4 GPU. The first request after a cold container is 60–90s while we load BiRefNet, Swin2SR, and GFPGAN weights — the trade-off for $0 idle cost. Production traffic stays on warm containers; pin a `keep_warm=1` worker if you want to eliminate cold starts entirely.",
+    a: "Warm calls are around 200ms for a 1024×1024 image on a Modal L4 GPU. The first request after a cold container is ~45s while we load BiRefNet, Swin2SR, GFPGAN, DDColor, and LaMa weights from disk — the trade-off for $0 idle cost. Production traffic stays on warm containers; pin a `keep_warm=1` worker if you want to eliminate cold starts entirely.",
   },
   {
     q: "How does the price compare?",
@@ -13,7 +13,7 @@ const ITEMS: { q: string; a: string }[] = [
   },
   {
     q: "Is the model open source?",
-    a: "Yes. Both the API code and the BiRefNet model weights are MIT licensed. You can self-host on your own Modal account in four commands, or fork everything outright.",
+    a: "Yes. The API code is MIT licensed. Models used: BiRefNet (MIT), Swin2SR (Apache-2.0), GFPGAN (Apache-2.0), DDColor (Apache-2.0), LaMa (Apache-2.0). You can self-host on your own Modal account in four commands, or fork everything outright.",
   },
   {
     q: "What image formats are supported?",

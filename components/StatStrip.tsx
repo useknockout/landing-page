@@ -57,7 +57,7 @@ export async function StatStrip() {
   const { downloads, stars } = await fetchLiveStats();
 
   const stats: { v: string; l: string }[] = [
-    { v: "22", l: "Endpoints in one API" },
+    { v: "23", l: "Endpoints in one API" },
     { v: "200ms", l: "Warm latency, 1024×1024" },
     { v: "40×", l: "Cheaper than remove.bg" },
     { v: formatDownloads(downloads), l: `Downloads · ${stars}★ on GitHub` },

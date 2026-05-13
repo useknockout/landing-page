@@ -58,7 +58,7 @@ export function Hero() {
 
           <p className="text-[18px] leading-[1.5] text-kno-text-gray max-w-[560px]">
             Background removal, super-resolution, face restore, sticker outlines, studio composites, batch
-            processing, and 22+ endpoints. ~200&nbsp;ms per call. MIT licensed, self-hostable, 40× cheaper than remove.bg.
+            processing, and 23 endpoints. ~200&nbsp;ms per call. MIT licensed, self-hostable, 40× cheaper than remove.bg.
           </p>
 
           <div className="flex flex-wrap gap-2.5">

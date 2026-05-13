@@ -25,6 +25,7 @@ const GROUPS: Group[] = [
       { v: "POST", p: "/outline", d: "Thin colored stroke on transparent background" },
       { v: "POST", p: "/smart-crop", d: "Tight bounding box around subject" },
       { v: "POST", p: "/silhouette", d: "Two-tone silhouette portrait · Apple Music aesthetic" },
+      { v: "POST", p: "/inpaint", d: "LaMa erase & fill · auto-subject / mask / bbox modes" },
     ],
   },
   {
@@ -65,7 +66,7 @@ export function Endpoints() {
             className="font-bold m-0"
             style={{ fontSize: 36, letterSpacing: "-0.02em", lineHeight: 1.15 }}
           >
-            One API, twenty-two endpoints.
+            One API, twenty-three endpoints.
           </h2>
           <p className="text-[16px] text-kno-text-gray mt-2 max-w-[640px]">
             Cover the full image-cutout, composition, and enhancement workflow without stitching
