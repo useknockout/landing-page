@@ -29,7 +29,7 @@ const TIERS: Tier[] = [
     bullets: [
       "20 images per month",
       "No card required",
-      "All 20 endpoints",
+      "All 23 endpoints",
       "Public beta token",
       "Community support",
     ],
@@ -43,7 +43,7 @@ const TIERS: Tier[] = [
     bullets: [
       "Per-image billing",
       "Credits never expire",
-      "All 20 endpoints",
+      "All 23 endpoints",
       "60 req/min rate limit",
       "Email support",
     ],
@@ -57,7 +57,7 @@ const TIERS: Tier[] = [
     per: "per image at 100k+/mo",
     bullets: [
       "Volume discount auto-applied",
-      "All 20 endpoints",
+      "All 23 endpoints",
       "600 req/min rate limit",
       "99.9% uptime SLA",
       "Slack support",
