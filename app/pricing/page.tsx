@@ -29,8 +29,7 @@ const TIERS: Tier[] = [
     bullets: [
       "20 images per month",
       "No card required",
-      "All 23 endpoints",
-      "Public beta token",
+      "9 core endpoints (bg removal + edits)",
       "Community support",
     ],
     cta: "Start free",
@@ -43,8 +42,7 @@ const TIERS: Tier[] = [
     bullets: [
       "Per-image billing",
       "Credits never expire",
-      "All 23 endpoints",
-      "60 req/min rate limit",
+      "All endpoints — incl. AI upscale, face restore, colorize, e-commerce presets & batch",
       "Email support",
     ],
     cta: "Get token →",
