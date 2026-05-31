@@ -99,6 +99,15 @@ const config: Config = {
         "kno-base": "180ms",
         "kno-slow": "320ms",
       },
+      keyframes: {
+        knoFadeUp: {
+          "0%": { opacity: "0", transform: "translateY(6px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "kno-fade-up": "knoFadeUp 400ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+      },
       maxWidth: {
         "kno-content": "1200px",
         "kno-content-wide": "1280px",

@@ -1,6 +1,6 @@
-import Image from "next/image";
+import { FeatureCarousel, type CarouselItem } from "@/components/ui/feature-carousel";
 
-const ITEMS = [
+const ITEMS: CarouselItem[] = [
   {
     tag: "Hair",
     img: "/assets/examples/woman-laptop-cutout.png",
@@ -44,31 +44,7 @@ export function FeatureGrid() {
           </p>
         </div>
 
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-          {ITEMS.map((it) => (
-            <article
-              key={it.tag}
-              className="bg-kno-white border border-kno-border-gray rounded-kno-xl overflow-hidden flex flex-col"
-            >
-              <div className="aspect-square relative checker">
-                <Image
-                  src={it.img}
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 280px"
-                  className="object-contain p-[8%]"
-                />
-                <span className="absolute top-2.5 left-2.5 font-mono text-[10px] px-[7px] py-[3px] rounded-full bg-black/85 text-kno-white">
-                  {it.tag}
-                </span>
-              </div>
-              <div className="p-[18px] flex flex-col gap-1.5">
-                <h3 className="text-[16px] font-semibold m-0">{it.title}</h3>
-                <p className="text-[13px] text-kno-text-gray m-0 leading-[1.5]">{it.body}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        <FeatureCarousel items={ITEMS} />
       </div>
     </section>
   );
