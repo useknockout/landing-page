@@ -62,7 +62,7 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-2.5">
-            <Button href="https://github.com/useknockout/api" variant="primary" size="lg">
+            <Button href="/signin?redirect=/dashboard/keys" variant="primary" size="lg">
               Try free →
             </Button>
             <Button href="/playground" variant="secondary" size="lg">

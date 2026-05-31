@@ -24,7 +24,7 @@ const TIERS: Tier[] = [
       "Community support",
     ],
     cta: "Start free",
-    ctaHref: "https://github.com/useknockout/api",
+    ctaHref: "/signin?redirect=/dashboard/keys",
   },
   {
     name: "Pay-as-you-go",
@@ -38,7 +38,7 @@ const TIERS: Tier[] = [
       "Email support",
     ],
     cta: "Get token →",
-    ctaHref: "https://github.com/useknockout/api",
+    ctaHref: "/signin?redirect=/dashboard/billing",
     primary: true,
   },
   {
