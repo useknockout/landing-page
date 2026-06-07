@@ -26,7 +26,7 @@ const COLS: { heading: string; links: { label: string; href: string }[] }[] = [
       { label: "GitHub", href: "https://github.com/useknockout/api" },
       { label: "X / Twitter", href: "https://x.com/useknockout" },
       { label: "Report issue", href: "https://github.com/useknockout/api/issues" },
-      { label: "Contact", href: "mailto:hi@useknockout.com" },
+      { label: "Contact", href: "/support" },
       { label: "Privacy", href: "/privacy" },
       { label: "Terms", href: "/terms" },
     ],

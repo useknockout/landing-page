@@ -64,39 +64,17 @@ async function maybeDownscale(
 
 type Endpoint =
   | "/remove"
-  | "/remove-url"
   | "/replace-bg"
-  | "/mask"
+  | "/compare"
   | "/sticker"
-  | "/outline"
-  | "/smart-crop"
-  | "/shadow"
-  | "/studio-shot"
-  | "/headshot"
-  | "/upscale"
-  | "/face-restore"
-  | "/colorize"
-  | "/silhouette"
-  | "/inpaint"
-  | "/preview";
+  | "/mask";
 
 const ENDPOINTS: { value: Endpoint; label: string }[] = [
   { value: "/remove", label: "POST /remove — transparent PNG" },
-  { value: "/remove-url", label: "POST /remove-url — same, source from URL" },
   { value: "/replace-bg", label: "POST /replace-bg — composite onto color or image" },
-  { value: "/mask", label: "POST /mask — grayscale alpha matte" },
+  { value: "/compare", label: "POST /compare — side-by-side before/after" },
   { value: "/sticker", label: "POST /sticker — die-cut outlined cutout" },
-  { value: "/outline", label: "POST /outline — thin colored stroke" },
-  { value: "/smart-crop", label: "POST /smart-crop — tight bounding box" },
-  { value: "/shadow", label: "POST /shadow — drop shadow composite" },
-  { value: "/studio-shot", label: "POST /studio-shot — e-commerce preset" },
-  { value: "/headshot", label: "POST /headshot — portrait cleanup" },
-  { value: "/upscale", label: "POST /upscale — Swin2SR / Real-ESRGAN" },
-  { value: "/face-restore", label: "POST /face-restore — GFPGAN" },
-  { value: "/colorize", label: "POST /colorize — DDColor B&W colorization" },
-  { value: "/silhouette", label: "POST /silhouette — two-tone portrait" },
-  { value: "/inpaint", label: "POST /inpaint — LaMa erase & fill" },
-  { value: "/preview", label: "POST /preview — low-res quick preview" },
+  { value: "/mask", label: "POST /mask — grayscale alpha matte" },
 ];
 
 const EXAMPLES = [
