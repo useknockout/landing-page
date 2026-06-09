@@ -29,6 +29,8 @@ export type EndpointSpec = {
   errors?: EndpointError[];
   notes?: string[];
   curl?: string;
+  node?: string;
+  python?: string;
   next?: { slug: string; label: string };
   prev?: { slug: string; label: string };
 };
@@ -540,6 +542,12 @@ x-knockout-mode: auto-subject`,
       { field: "bg_color", type: "string", def: "#FFFFFF", desc: "Background hex color." },
       { field: "padding", type: "int", def: "10%", desc: "Padding as pixels or % of canvas." },
       { field: "shadow", type: "boolean", def: "true", desc: "Whether to add a soft drop shadow." },
+      {
+        field: "transparent",
+        type: "boolean",
+        def: "false",
+        desc: "Keep a transparent background. Ignores bg_color and shadow (a shadow needs an opaque bg). Output is forced to PNG if format=jpg, since jpg can't carry alpha.",
+      },
       { field: "aspect", type: "string", def: "1:1", desc: "Output aspect ratio." },
     ],
     responseHeaders: COMMON_HEADERS,
@@ -548,8 +556,16 @@ x-knockout-mode: auto-subject`,
     notes: [
       "Defaults match Shopify and Amazon catalog requirements: 1:1, white bg, 10% padding.",
       "Override aspect to 4:5 for Instagram, 16:9 for desktop catalog headers.",
+      "When transparent=true, bg_color and shadow are ignored.",
+      "Output is PNG (alpha). Requesting jpg auto-coerces to PNG.",
     ],
-    curl: curlFor("/studio-shot", `-F "bg_color=#F9FAFB"`),
+    curl: `curl -X POST "https://useknockout--api.modal.run/studio-shot" \\
+  -H "Authorization: Bearer $KNOCKOUT_TOKEN" \\
+  -F "file=@product.jpg" \\
+  -F "transparent=true" \\
+  --output studio.png`,
+    node: `const png = await client.studioShot({ file: "./product.jpg", transparent: true });`,
+    python: `png = client.studio_shot("product.jpg", transparent=True)`,
     prev: { slug: "shadow", label: "POST /shadow" },
     next: { slug: "headshot", label: "POST /headshot" },
   },

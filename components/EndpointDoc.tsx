@@ -27,14 +27,11 @@ export function EndpointDoc({ spec }: { spec: EndpointSpec }) {
     desc: e.desc,
   }));
 
-  const requestTabs = spec.curl
-    ? [
-        {
-          name: "cURL",
-          code: spec.curl,
-        },
-      ]
-    : [];
+  const requestTabs = [
+    spec.curl ? { name: "cURL", code: spec.curl } : null,
+    spec.node ? { name: "Node", code: spec.node } : null,
+    spec.python ? { name: "Python", code: spec.python } : null,
+  ].filter((t): t is { name: string; code: string } => t !== null);
 
   const responseTabs = [
     spec.responseHeaders ? { name: "Headers", code: spec.responseHeaders } : null,
